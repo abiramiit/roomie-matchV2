@@ -8,8 +8,18 @@ const {
 
 router.use(protect);
 router.put('/profile', updateProfile);
-router.post('/avatar', upload.single('avatar'), uploadAvatar);
-router.post('/photos', upload.array('photos', 5), uploadPhotos);
+router.post('/avatar', (req, res, next) => {
+  upload.single('avatar')(req, res, (err) => {
+    if (err) return res.status(400).json({ message: err.message });
+    next();
+  });
+}, uploadAvatar);
+router.post('/photos', (req, res, next) => {
+  upload.array('photos', 5)(req, res, (err) => {
+    if (err) return res.status(400).json({ message: err.message });
+    next();
+  });
+}, uploadPhotos);
 router.get('/', getUsers);
 router.get('/saved', getSavedProfiles);
 router.get('/:id', getUserById);

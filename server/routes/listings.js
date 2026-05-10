@@ -10,7 +10,12 @@ router.use(protect);
 router.get('/', getListings);
 router.get('/my', getMyListings);
 router.get('/:id', getListingById);
-router.post('/', upload.array('photos', 8), createListing);
+router.post('/', (req, res, next) => {
+  upload.array('photos', 8)(req, res, (err) => {
+    if (err) return res.status(400).json({ message: err.message });
+    next();
+  });
+}, createListing);
 router.put('/:id', updateListing);
 router.delete('/:id', deleteListing);
 

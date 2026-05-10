@@ -1,24 +1,19 @@
-const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Store files in memory, upload to Cloudinary manually in controllers
+// Always use memory storage - no external dependencies at require time
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) cb(null, true);
-    else cb(new Error('Only image files allowed'), false);
-  },
 });
 
-// Helper to upload a buffer to Cloudinary
-const uploadToCloudinary = (buffer, folder = 'roomieconnect') => {
+// Upload buffer to Cloudinary - only called when actually uploading
+const uploadToCloudinary = async (buffer, folder = 'roomieconnect') => {
+  const cloudinary = require('cloudinary').v2;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(
       { folder, resource_type: 'image' },
@@ -30,4 +25,4 @@ const uploadToCloudinary = (buffer, folder = 'roomieconnect') => {
   });
 };
 
-module.exports = { cloudinary, upload, uploadToCloudinary };
+module.exports = { upload, uploadToCloudinary };
