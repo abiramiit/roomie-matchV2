@@ -1,8 +1,11 @@
 const RoomListing = require('../models/RoomListing');
+const { uploadToCloudinary } = require('../utils/cloudinary');
 
 exports.createListing = async (req, res) => {
   try {
-    const photos = req.files ? req.files.map(f => f.path) : [];
+    const photos = req.files?.length
+      ? await Promise.all(req.files.map(f => uploadToCloudinary(f.buffer)))
+      : [];
     const listing = await RoomListing.create({ ...req.body, owner: req.user._id, photos });
     res.status(201).json(listing);
   } catch (err) {

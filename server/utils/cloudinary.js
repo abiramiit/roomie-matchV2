@@ -7,26 +7,27 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const isConfigured =
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET;
+// Store files in memory, upload to Cloudinary manually in controllers
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) cb(null, true);
+    else cb(new Error('Only image files allowed'), false);
+  },
+});
 
-let upload;
-
-if (isConfigured) {
-  const { CloudinaryStorage } = require('multer-storage-cloudinary');
-  const storage = new CloudinaryStorage({
-    cloudinary,
-    params: {
-      folder: 'roomieconnect',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    },
+// Helper to upload a buffer to Cloudinary
+const uploadToCloudinary = (buffer, folder = 'roomieconnect') => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      { folder, resource_type: 'image' },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result.secure_url);
+      }
+    ).end(buffer);
   });
-  upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
-} else {
-  console.warn('⚠️  Cloudinary not configured — file uploads disabled');
-  upload = multer({ storage: multer.memoryStorage() });
-}
+};
 
-module.exports = { cloudinary, upload };
+module.exports = { cloudinary, upload, uploadToCloudinary };

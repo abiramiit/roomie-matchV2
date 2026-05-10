@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const Profile = require('../models/Profile');
-const { cloudinary, upload } = require('../utils/cloudinary');
+const { uploadToCloudinary } = require('../utils/cloudinary');
 
 exports.updateProfile = async (req, res) => {
   try {
@@ -22,7 +22,8 @@ exports.updateProfile = async (req, res) => {
 exports.uploadAvatar = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-    const user = await User.findByIdAndUpdate(req.user._id, { avatar: req.file.path }, { new: true }).select('-password');
+    const url = await uploadToCloudinary(req.file.buffer);
+    const user = await User.findByIdAndUpdate(req.user._id, { avatar: url }, { new: true }).select('-password');
     res.json({ avatar: user.avatar });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -32,7 +33,7 @@ exports.uploadAvatar = async (req, res) => {
 exports.uploadPhotos = async (req, res) => {
   try {
     if (!req.files?.length) return res.status(400).json({ message: 'No files uploaded' });
-    const urls = req.files.map(f => f.path);
+    const urls = await Promise.all(req.files.map(f => uploadToCloudinary(f.buffer)));
     const profile = await Profile.findOneAndUpdate(
       { user: req.user._id },
       { $push: { photos: { $each: urls } } },
