@@ -7,25 +7,26 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Use memory storage if Cloudinary is not configured
-const isCloudinaryConfigured =
+const isConfigured =
   process.env.CLOUDINARY_CLOUD_NAME &&
   process.env.CLOUDINARY_API_KEY &&
   process.env.CLOUDINARY_API_SECRET;
 
-let storage;
+let upload;
 
-if (isCloudinaryConfigured) {
+if (isConfigured) {
   const { CloudinaryStorage } = require('multer-storage-cloudinary');
-  storage = new CloudinaryStorage({
+  const storage = new CloudinaryStorage({
     cloudinary,
-    params: { folder: 'roomieconnect', allowed_formats: ['jpg', 'jpeg', 'png', 'webp'] },
+    params: {
+      folder: 'roomieconnect',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    },
   });
+  upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 } else {
-  console.warn('Cloudinary not configured — using memory storage');
-  storage = multer.memoryStorage();
+  console.warn('⚠️  Cloudinary not configured — file uploads disabled');
+  upload = multer({ storage: multer.memoryStorage() });
 }
-
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 module.exports = { cloudinary, upload };
