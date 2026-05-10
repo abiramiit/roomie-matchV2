@@ -13,8 +13,24 @@ const server = http.createServer(app);
 
 initSocket(server);
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(cors({
+  origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : '*',
+  credentials: true,
+}));
 app.use(express.json());
+
+app.get('/', (req, res) => res.json({
+  status: 'ok',
+  message: 'RoomieConnect API is running ✅',
+  endpoints: {
+    auth: '/api/auth/register [POST], /api/auth/login [POST], /api/auth/me [GET]',
+    users: '/api/users [GET], /api/users/:id [GET]',
+    matches: '/api/matches [GET], /api/matches/like/:id [POST]',
+    listings: '/api/listings [GET], /api/listings/:id [GET]',
+  }
+}));
+
+app.get('/api/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
