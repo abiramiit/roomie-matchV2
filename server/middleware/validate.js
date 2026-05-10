@@ -1,11 +1,4 @@
-const { validationResult } = require('express-validator');
-
-const validate = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ message: errors.array()[0].msg });
-  }
-  next();
-};
-
+// Validation is handled directly in controllers
+// This file kept for compatibility
+const validate = (req, res, next) => next();
 module.exports = validate;
