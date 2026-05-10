@@ -2,19 +2,16 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Profile = require('../models/Profile');
 
-const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+const signToken = (id) =>
+  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
 
-exports.register = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
     if (!name || !email || !password)
       return res.status(400).json({ message: 'Name, email and password are required' });
     if (password.length < 6)
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
-    if (!/^\S+@\S+\.\S+$/.test(email))
-      return res.status(400).json({ message: 'Valid email is required' });
-
     if (await User.findOne({ email }))
       return res.status(400).json({ message: 'Email already registered' });
 
@@ -22,7 +19,7 @@ exports.register = async (req, res) => {
     await Profile.create({ user: user._id });
     const token = signToken(user._id);
 
-    res.status(201).json({
+    return res.status(201).json({
       token,
       user: {
         _id: user._id,
@@ -33,14 +30,13 @@ exports.register = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password)
       return res.status(400).json({ message: 'Email and password are required' });
 
@@ -51,7 +47,7 @@ exports.login = async (req, res) => {
       return res.status(403).json({ message: 'Account suspended' });
 
     const token = signToken(user._id);
-    res.json({
+    return res.json({
       token,
       user: {
         _id: user._id,
@@ -63,15 +59,17 @@ exports.login = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
-exports.getMe = async (req, res) => {
+const getMe = async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user._id });
-    res.json({ user: req.user, profile });
+    return res.json({ user: req.user, profile });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
+
+module.exports = { register, login, getMe };
