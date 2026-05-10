@@ -6,6 +6,9 @@ const connectDB = require('./utils/db');
 const { initSocket } = require('./sockets/socket');
 
 dotenv.config();
+console.log('ENV CHECK → MONGO_URI:', process.env.MONGO_URI ? 'SET ✅' : 'MISSING ❌');
+console.log('ENV CHECK → JWT_SECRET:', process.env.JWT_SECRET ? 'SET ✅' : 'MISSING ❌');
+console.log('ENV CHECK → PORT:', process.env.PORT || '5000 (default)');
 connectDB();
 
 const app = express();
@@ -14,7 +17,9 @@ const server = http.createServer(app);
 initSocket(server);
 
 app.use(cors({
-  origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : '*',
+  origin: process.env.CLIENT_URL === '*' || !process.env.CLIENT_URL
+    ? '*'
+    : process.env.CLIENT_URL.split(','),
   credentials: true,
 }));
 app.use(express.json());
