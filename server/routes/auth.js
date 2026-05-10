@@ -5,11 +5,14 @@ const { protect } = require('../middleware/auth');
 const validate = require('../middleware/validate');
 
 router.post('/register',
-  [body('name').notEmpty(), body('email').isEmail(), body('password').isLength({ min: 6 })],
+  body('name').notEmpty().withMessage('Name is required'),
+  body('email').isEmail().withMessage('Valid email required'),
+  body('password').isLength({ min: 6 }).withMessage('Password min 6 chars'),
   validate, register
 );
 router.post('/login',
-  [body('email').isEmail(), body('password').notEmpty()],
+  body('email').isEmail().withMessage('Valid email required'),
+  body('password').notEmpty().withMessage('Password required'),
   validate, login
 );
 router.get('/me', protect, getMe);
