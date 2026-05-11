@@ -1,0 +1,230 @@
+### Variables
+@baseUrl = http://localhost:5000
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMDIwYzAwMDc0MTdiZjU3YzhhZTYzMyIsImlhdCI6MTc3ODUxOTA0MSwiZXhwIjoxNzc5MTIzODQxfQ.3g1LOFX5-VhfASDw_oa-auLM7p_BsNSKNR9HJQOp_Lk
+### Root
+GET {{baseUrl}}/
+
+###
+
+### AUTH - Register
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+
+### AUTH - Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+
+### AUTH - Get Me
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+###
+
+### USERS - Get All Users
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{token}}
+
+###
+
+### USERS - Update Profile
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "age": 24,
+  "gender": "male",
+  "occupation": "student",
+  "bio": "Looking for a quiet roommate",
+  "location": { "city": "Mumbai", "state": "Maharashtra" },
+  "budget": { "min": 5000, "max": 15000 },
+  "lifestyle": {
+    "smoking": "no",
+    "drinking": "no",
+    "pets": "no",
+    "sleepSchedule": "early-bird",
+    "cleanliness": 4
+  }
+}
+
+###
+
+### USERS - Get User By ID
+GET {{baseUrl}}/api/users/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### USERS - Save Profile
+POST {{baseUrl}}/api/users/PASTE_USER_ID_HERE/save
+Authorization: Bearer {{token}}
+
+###
+
+### USERS - Get Saved Profiles
+GET {{baseUrl}}/api/users/saved
+Authorization: Bearer {{token}}
+
+###
+
+### MATCHES - Get Match Suggestions
+GET {{baseUrl}}/api/matches
+Authorization: Bearer {{token}}
+
+###
+
+### MATCHES - Get My Matches
+GET {{baseUrl}}/api/matches/my
+Authorization: Bearer {{token}}
+
+###
+
+### MATCHES - Like User
+POST {{baseUrl}}/api/matches/like/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### MATCHES - Dislike User
+POST {{baseUrl}}/api/matches/dislike/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### MATCHES - Get Notifications
+GET {{baseUrl}}/api/matches/notifications
+Authorization: Bearer {{token}}
+
+###
+
+### MATCHES - Mark Notifications Read
+PUT {{baseUrl}}/api/matches/notifications/read
+Authorization: Bearer {{token}}
+
+###
+
+### MESSAGES - Get Conversations
+GET {{baseUrl}}/api/messages/conversations
+Authorization: Bearer {{token}}
+
+###
+
+### MESSAGES - Get Messages with User
+GET {{baseUrl}}/api/messages/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### MESSAGES - Send Message
+POST {{baseUrl}}/api/messages/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "Hey! Are you still looking for a roommate?"
+}
+
+###
+
+### LISTINGS - Get All Listings
+GET {{baseUrl}}/api/listings
+Authorization: Bearer {{token}}
+
+###
+
+### LISTINGS - Get My Listings
+GET {{baseUrl}}/api/listings/my
+Authorization: Bearer {{token}}
+
+###
+
+### LISTINGS - Create Listing
+POST {{baseUrl}}/api/listings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Spacious room in Bandra",
+  "description": "Fully furnished room available",
+  "rent": 12000,
+  "deposit": 24000,
+  "location": { "city": "Mumbai", "state": "Maharashtra", "address": "Bandra West", "pincode": "400050" },
+  "roomType": "single",
+  "furnishing": "furnished",
+  "amenities": ["wifi", "ac", "parking"],
+  "genderPreference": "any"
+}
+
+###
+
+### LISTINGS - Get Listing By ID
+GET {{baseUrl}}/api/listings/PASTE_LISTING_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### LISTINGS - Update Listing
+PUT {{baseUrl}}/api/listings/PASTE_LISTING_ID_HERE
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "rent": 11000
+}
+
+###
+
+### LISTINGS - Delete Listing
+DELETE {{baseUrl}}/api/listings/PASTE_LISTING_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### ADMIN - Dashboard
+GET {{baseUrl}}/api/admin/dashboard
+Authorization: Bearer {{token}}
+
+###
+
+### ADMIN - Get All Users
+GET {{baseUrl}}/api/admin/users
+Authorization: Bearer {{token}}
+
+###
+
+### ADMIN - Block User
+PUT {{baseUrl}}/api/admin/users/PASTE_USER_ID_HERE/block
+Authorization: Bearer {{token}}
+
+###
+
+### ADMIN - Delete User
+DELETE {{baseUrl}}/api/admin/users/PASTE_USER_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### ADMIN - Get All Listings
+GET {{baseUrl}}/api/admin/listings
+Authorization: Bearer {{token}}
+
+###
+
+### ADMIN - Toggle Listing
+PUT {{baseUrl}}/api/admin/listings/PASTE_LISTING_ID_HERE/toggle
+Authorization: Bearer {{token}}
